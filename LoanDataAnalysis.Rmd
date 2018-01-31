@@ -1,0 +1,118 @@
+---
+title: "Predictive Modeling of Attributes that lead to Loan Defaulting "
+author: "Vamsee Addepalli"
+date: "30 Jan 2018"
+output: 
+  html_document: 
+    fig_caption: yes
+    highlight: tango
+    theme: cosmo
+    toc: yes
+---
+
+## Introduction
+
+Loan data analysis can help Banks in stemming Bad Loan decisions taken with prospective customers and also can help in identifying potential defaulters in their existing customers thereby taking corrective actions if any.
+
+## Data Processing
+
+``` {r, echo = FALSE, message=FALSE, warning=FALSE}
+# Load the necessary libraries
+library(data.table)
+library(lubridate)
+library(ggplot2)
+# library(caret)
+library(gbm)
+library(randomForest)
+```
+
+```{r load-data, cache=TRUE, echo = FALSE, message = FALSE, warning = FALSE}
+    ## Load the Loan data into a data table to avoid repetition of this task, 
+    ### using the r code chunk option -- cache=TRUE
+    
+    dt_loan <- fread('../../data/loandata/lcloandata.csv')
+    dt_loan_props <- tables(silent = TRUE)[NAME == 'dt_loan', .(NROW, NCOL, MB)]
+
+```
+    
+The Summary of the Loan data is as follows:  
+1. **`r dt_loan_props[[1]]`** observations of Loan data   
+2. __`r dt_loan_props[[2]]`__ attributes recorded for each observation    
+3. **`r dt_loan_props[[3]]` MB** space occupied in memory by the data     
+
+### Data Cleaning
+
+Since the report is specifically aimed at identifying attributes that can impact the loan status and thus be able to predict the same effectively, we will perform the following operations to effectively tidy up the columns to perform the analysis.     
+
+1. Drop columns containing high number of NA or null values     
+2. Drop columns that add little to no value to the analysis at hand   
+3. Parse the columns that are storing date values into Date data type       
+4. Perform some Feature Transformations     
+
+``` {r tidy-data, echo = FALSE}
+    check_null <- dt_loan[, lapply(.SD, function(x) sum(is.na(x))/.N)]
+    dt_loan <- dt_loan[, .SD, .SDcols = names(check_null[check_null > 0.6])]
+
+```
+
+
+<!-- ## Results -->
+
+<!-- The provided data has been collated STATE wise across all United States for each Event type. -->
+<!-- The following sub-sections illustrate the event wise impact on population health and economic conditions. -->
+
+<!-- ### Impact of Various Events on Population Health -->
+
+<!-- The below table shows the events having maximum impact on population health state-wise.  -->
+
+<!-- ``` {r hlt_res_1} -->
+<!--     df <- as.data.frame(hlt_imp_top %>% -->
+<!--                           arrange(desc(tot_hlt_imp)) -->
+<!--     ) -->
+<!--     df -->
+
+<!-- ``` -->
+
+<!-- A general summary of the data shows that the following events have the maximum effect on population health across United States. The figure represents the event that causes maximum health impact across all states of United States. -->
+
+<!-- ``` {r, fig.width=10} -->
+<!--     max_hlt_evt -->
+
+<!--     xyplot(tot_hlt_imp ~ STATE | EVTYPE, -->
+<!--            type="l",  -->
+<!--            data = hlt_imp_max_evt_dt,  -->
+<!--            layout=c(1,3), -->
+<!--            main = "Impact of the event that causes maximum health impact  -->
+<!--                         across various states ", -->
+<!--            ylab = "Total number of injuries/fatalities reported", -->
+<!--            xlab = "States", -->
+<!--            scales=list(x=list(rot=45)) -->
+<!--            ) -->
+<!-- ``` -->
+
+<!-- ### Impact of Various Events on Economy -->
+
+<!-- The below table shows the events having maximum economic impact state-wise -->
+
+<!-- ``` {r eco_res_1} -->
+<!--     df <- as.data.frame(eco_imp_top %>% -->
+<!--                           arrange(desc(tot_eco_dmg)) -->
+<!--     ) -->
+<!--     df -->
+<!-- ``` -->
+
+<!-- A general summary of the data shows that the following events have the maximum effect on population health across United States. The figure represents the event that causes maximum health impact across all states of United States. -->
+
+<!-- ``` {r, fig.width=10} -->
+<!--     max_eco_evt -->
+
+<!--     xyplot(tot_eco_dmg ~ STATE | EVTYPE, -->
+<!--            type="l",  -->
+<!--            data = eco_imp_max_evt_dt,  -->
+<!--            layout=c(1,3), -->
+<!--            main = "Impact of the event that causes maximum economic damage across various states ", -->
+<!--            ylab = "Gross Dollar value of crop/property damages", -->
+<!--            xlab = "States", -->
+<!--            scales=list(x=list(rot=45)) -->
+<!--            ) -->
+<!-- ``` -->
